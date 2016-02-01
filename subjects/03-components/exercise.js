@@ -34,23 +34,61 @@ styles.panel = {
   padding: 10
 }
 
+const Tab = ({
+    id,
+    isActive,
+    country,
+    changeActiveTab
+}) => {
+  return (
+      <div className="Tab"
+           style={(isActive) ? styles.activeTab : styles.tab}
+           onClick={changeActiveTab.bind(null, id)}>
+          {country.name}
+      </div>
+  );
+};
+
+const TabPanel = ({ name, description }) => {
+  return (
+    <div className="TabPanel"
+         style={styles.panel}>
+        <p>{description}</p>
+    </div>
+  );
+};
+
 const Tabs = React.createClass({
+    getInitialState() {
+        return {
+            activeTab: 1
+        }
+    },
+
+    changeActiveTab(tabIndex) {
+        this.setState({activeTab: tabIndex});
+    },
+
   render() {
+      const countryTabs = DATA.map((country) => {
+         return <Tab key={country.id}
+                     id={country.id}
+                     isActive={(this.state.activeTab === country.id)}
+                     country={country}
+                     changeActiveTab={this.changeActiveTab} />;
+      });
+      const activeTabDetails = DATA.filter((country) => {
+         return country.id === this.state.activeTab;
+      });
     return (
       <div className="Tabs">
-        <div className="Tab" style={styles.activeTab}>
-          Active
-        </div>
-        <div className="Tab" style={styles.tab}>
-          Inactive
-        </div>
-        <div className="TabPanel" style={styles.panel}>
-          Panel
-        </div>
+          {countryTabs}
+        <TabPanel name={activeTabDetails[0].name}
+                  description={activeTabDetails[0].description}/>
       </div>
     )
   }
-})
+});
 
 const App = React.createClass({
   render() {

@@ -17,9 +17,27 @@ import { render } from 'react-dom'
 import sortBy from 'sort-by'
 
 function Menu() {
+    const mexicanItems = DATA.items.filter(function(item) {
+        return item.type === 'mexican';
+    });
+    const alphabeticalMenuItems = DATA.items.sort(sortBy('name'));
+    const mexicanMenuItems = mexicanItems.map(function(item) {
+       return <li key={item.id}>{item.name} {item.type}</li>
+    });
+  const menuItems = alphabeticalMenuItems.map(function(item) {
+     return <li key={item.id}>{item.name} {item.type}</li>
+  });
+
   return (
     <div>
-      Open the console, you have failing tests
+      <h1>{DATA.title}</h1>
+        <ul>
+            {menuItems}
+        </ul>
+        <h2>Mexican Items</h2>
+        <ul>
+            {mexicanMenuItems}
+        </ul>
     </div>
   )
 }
@@ -34,8 +52,8 @@ const DATA = {
     { id: 5, name: 'fish and chips', type: 'english' },
     { id: 6, name: 'black pudding', type: 'english' }
   ]
-}
+};
 
 render(<Menu/>, document.getElementById('app'), function () {
   require('./tests').run()
-})
+});
