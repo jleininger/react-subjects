@@ -23,36 +23,28 @@ import data from './lib/data'
 const Tabs = React.createClass({
 
   propTypes: {
+    activeTabIndex: React.PropTypes.number,
+    handleTabClick: React.PropTypes.func,  
     data: React.PropTypes.array.isRequired
-  },
-
-  getInitialState() {
-    return {
-      activeTabIndex: 0
-    }
-  },
-
-  handleTabClick(activeTabIndex) {
-    this.setState({ activeTabIndex })
   },
 
   renderTabs() {
     return this.props.data.map((tab, index) => {
-      const style = this.state.activeTabIndex === index ?
+      const style = this.props.activeTabIndex === index ?
         styles.activeTab : styles.tab
       return (
         <div
           className="Tab"
           key={tab.name}
           style={style}
-          onClick={() => this.handleTabClick(index)}
+          onClick={() => this.props.handleTabClick(index)}
         >{tab.name}</div>
       )
     })
   },
 
   renderPanel() {
-    const tab = this.props.data[this.state.activeTabIndex]
+    const tab = this.props.data[this.props.activeTabIndex]
     return (
       <div>
         <p>{tab.description}</p>
@@ -77,11 +69,24 @@ const Tabs = React.createClass({
 
 const App = React.createClass({
 
+   getInitialState() {
+       return {
+           activeTabIndex: 0
+       }
+   },
+   
+   handleTabClick(activeTabIndex) {
+       this.setState({ activeTabIndex });
+   },
+   
   render() {
     return (
       <div>
         <h1>Props v. State</h1>
-        <Tabs ref="tabs" data={this.props.tabs}/>
+        <Tabs ref="tabs"
+             handleTabClick={this.handleTabClick}
+             data={this.props.tabs}
+             activeTabIndex={this.state.activeTabIndex} />
       </div>
     )
   }

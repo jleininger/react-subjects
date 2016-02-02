@@ -9,13 +9,39 @@ import { render, findDOMNode } from 'react-dom'
 import $ from 'jquery'
 import 'bootstrap-webpack'
 
-const { string, node } = React.PropTypes
+const { bool, func, string, node } = React.PropTypes
 
 const Modal = React.createClass({
 
   propTypes: {
+    isOpen: bool.isRequired,  
     title: string.isRequired,
+    onClose: func,
     children: node
+  },
+
+  componentDidMount() {
+      this.doImperativeWork();
+      
+      $(findDOMNode(this)).on('hidden.bs.modal', () => {
+         if(this.props.onClose) {
+             this.props.onClose();
+         } 
+      });
+  },
+  
+  componentDidUpdate(prevProps) {
+      if(prevProps.isOpen !== this.props.isOpen) {
+          this.doImperativeWork();
+      }
+  },
+
+  doImperativeWork() {
+      if(this.props.isOpen === true) {
+          $(findDOMNode(this)).modal('show');
+      } else {
+          $(findDOMNode(this)).modal('hide');
+      }
   },
 
   render() {
@@ -39,12 +65,18 @@ const Modal = React.createClass({
 
 const App = React.createClass({
 
+  getInitialState() {
+      return {
+          isModalOpen: false
+      }
+  },
+
   openModal() {
-    $(findDOMNode(this.refs.modal)).modal('show')
+    this.setState({ isModalOpen: true });
   },
 
   closeModal() {
-    $(findDOMNode(this.refs.modal)).modal('hide')
+    this.setState({ isModalOpen: false });
   },
 
   render() {
@@ -57,7 +89,10 @@ const App = React.createClass({
           onClick={this.openModal}
         >open modal</button>
 
-        <Modal ref="modal" title="Declarative is better">
+        <Modal ref="modal" 
+               title="Declarative is better"
+               isOpen={this.state.isModalOpen}
+               onClose={this.state.closeModal} >
           <p>Calling methods on instances is a FLOW not a STOCK!</p>
           <p>It’s the dynamic process, not the static program in text space.</p>
           <p>You have to experience it over time, rather than in snapshots of state.</p>
